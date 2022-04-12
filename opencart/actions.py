@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import Remote
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 from .serializers.login_serializer import LoginSerializer
@@ -74,6 +74,23 @@ def grab_ad(driver: Remote):
         '//span[@class="bg-blue" and contains(text(), "Automatic grab")]'
     ).click()
 
+
+def finished_all_orders(driver: Remote):
+    grab_ad(driver)
+
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((
+                By.XPATH, '//div[contains(text(), '
+                          '"You have completed all orders")]')
+            )
+        )
+        return True
+    except TimeoutException:
+        return False
+
+
+def submit_order(driver: Remote):
     WebDriverWait(driver, 15).until(
         EC.presence_of_element_located((
             By.XPATH, '//p[contains(text(), "Pending")]')
@@ -86,6 +103,8 @@ def grab_ad(driver: Remote):
     )
     submit_order.click()
 
+
+def check_if_order_has_submited(driver: Remote):
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((
             By.XPATH,

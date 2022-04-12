@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 
 
-from selenium.webdriver import Remote, ChromeOptions
-from selenium.webdriver.common.by import By
+from selenium.webdriver import Remote, ChromeOptions, Chrome
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
@@ -26,15 +25,3 @@ class BaseCrawler:
         )
 
         self.driver.get(self.url)
-
-    def check_if_finish_day_orders(self):
-        try:
-            self.driver.find_element(
-                By.XPATH,
-                '//div[contains(text(), "You have completed all orders")]'
-            )
-            self.finish_day_orders = True
-        except Exception:
-            self.finish_day_orders = False
-            # TODO: catch the exception type to handle
-            raise
