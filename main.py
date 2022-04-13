@@ -1,20 +1,19 @@
-from opencart.base_crawler import BaseCrawler
-from opencart.actions import (
-    login_user, access_grab_ad_page, finished_all_orders,
-    submit_order, check_if_order_has_submited
-)
+from opencart.crawler import Crawler
 
-from get_env_var import get_env_var
+from env_var import get_env_var
 
 
 if __name__ == '__main__':
-    crawler = BaseCrawler()
+    crawler = Crawler()
     user = get_env_var('USER_LOGIN')
     password = get_env_var('PASSWORD')
 
-    login_user(crawler.driver, user, password)
-    access_grab_ad_page(crawler.driver)
+    crawler._login_user(user, password)
+    crawler._access_grab_ad_page()
 
-    while not finished_all_orders(crawler.driver):
-        submit_order(crawler.driver)
-        check_if_order_has_submited(crawler.driver)
+    while True:
+        crawler._grab_ad()
+        if crawler._finished_all_orders():
+            break
+        crawler._submit_order()
+        crawler._check_if_order_has_submited()
