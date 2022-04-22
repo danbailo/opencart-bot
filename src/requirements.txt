@@ -1,3 +1,4 @@
+click==8.1.2
 pydantic==1.9.0
 python-dotenv==0.20.0
 selenium==4.1.3
