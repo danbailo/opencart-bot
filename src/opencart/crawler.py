@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 from selenium.common.exceptions import TimeoutException
@@ -20,9 +20,10 @@ TIME_TO_WAIT = 20
 
 @dataclass
 class Crawler(BaseCrawler):
+    use_driver: bool = field(init=True)
 
     def __post_init__(self):
-        super().__init__()
+        super().__init__(use_driver=self.use_driver)
         logger.debug('accessing target page')
         self.driver.get(self.url)
 

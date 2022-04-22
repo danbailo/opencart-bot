@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
 
+import os
+import os.path
 
-from selenium.webdriver import Remote, ChromeOptions
+
+from selenium.webdriver import Remote, Chrome, ChromeOptions
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,18 +16,30 @@ from env_var import get_env_var
 
 @dataclass
 class BaseCrawler:
-    url: str = field(default=get_env_var('URL_LOGIN'), init=False)
+    url: str = field(default=get_env_var('URL_LOGIN') or 'https://open93.com/#/login', init=False)
 
-    def __init__(self):
+    def __init__(self, use_driver):
         chrome_options = ChromeOptions()
         chrome_options.add_argument('--start-maximized')
         chrome_options.add_argument('--ignore-certificate-errors')
 
-        self.driver = Remote(
-            command_executor=get_env_var('CHROME_PATH'),
-            desired_capabilities=DesiredCapabilities.CHROME,
-            options=chrome_options
-        )
+        if use_driver:
+            if os.name == 'nt':
+                file = 'chromedriver.exe'
+            else:
+                file = 'chromedriver'
+
+            self.driver = Chrome(
+                executable_path=os.path.join('..', 'resources', file),
+                desired_capabilities=DesiredCapabilities.CHROME,
+                options=chrome_options
+            )
+        else:
+            self.driver = Remote(
+                command_executor=get_env_var('CHROME_PATH'),
+                desired_capabilities=DesiredCapabilities.CHROME,
+                options=chrome_options
+            )
 
     def _check_if_form_is_on_screen(self, xpath_login: str):
         WebDriverWait(self.driver, 10).until(
