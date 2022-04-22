@@ -15,6 +15,8 @@ from .forms import send_keys_from_serializer
 
 from .serializers.login_serializer import LoginSerializer
 
+TIME_TO_WAIT = 20
+
 
 @dataclass
 class Crawler(BaseCrawler):
@@ -40,7 +42,7 @@ class Crawler(BaseCrawler):
 
     def _close_report_if_necessary(self):
         try:
-            element = WebDriverWait(self.driver, 5).until(
+            element = WebDriverWait(self.driver, TIME_TO_WAIT).until(
                 EC.presence_of_element_located(
                     (By.XPATH, '//i[@class="van-icon van-icon-close"]')
                 )
@@ -65,7 +67,7 @@ class Crawler(BaseCrawler):
 
     def _finished_all_orders(self):
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, TIME_TO_WAIT).until(
                 EC.presence_of_element_located((
                     By.XPATH, '//div[contains(text(), '
                               '"You have completed all orders")]')
@@ -78,7 +80,7 @@ class Crawler(BaseCrawler):
 
     def _submit_order(self):
         logger.debug('submiting order')
-        WebDriverWait(self.driver, 15).until(
+        WebDriverWait(self.driver, TIME_TO_WAIT).until(
             EC.presence_of_element_located((
                 By.XPATH, '//p[contains(text(), "Pending")]')
             )
@@ -88,14 +90,14 @@ class Crawler(BaseCrawler):
         ).click()
 
     def _check_if_order_has_submited(self):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, TIME_TO_WAIT).until(
             EC.presence_of_element_located((
                 By.XPATH,
                 '//div[@class="van-toast__text" and '
                 'contains(text(), "Order completed")]')
             )
         )
-        WebDriverWait(self.driver, 10).until_not(
+        WebDriverWait(self.driver, TIME_TO_WAIT).until_not(
             EC.presence_of_element_located((
                 By.XPATH, '//div[@class="van-toast__text" and '
                 'contains(text(), "Order completed")]')
