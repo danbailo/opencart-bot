@@ -16,22 +16,24 @@ from env_var import get_env_var
 
 @dataclass
 class BaseCrawler:
-    url: str = field(default=get_env_var('URL_LOGIN') or 'https://open93.com/#/login', init=False)
+    url: str = field(default=get_env_var('URL_LOGIN') or
+                     'https://open93.com/#/login', init=False)
 
+    # TODO: define web driver using a property
     def __init__(self, use_driver):
         chrome_options = ChromeOptions()
         chrome_options.add_argument('--start-maximized')
         chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-gpu")
 
         if use_driver:
-            if os.name == 'nt':
-                file = 'chromedriver.exe'
-            else:
-                file = 'chromedriver'
-
+            chrome_options.add_argument("--headless")
             self.driver = Chrome(
-                executable_path=os.path.join('..', 'resources', file),
-                desired_capabilities=DesiredCapabilities.CHROME,
+                executable_path=os.path.join(
+                    '..', 'resources', 'chromedriver.exe' if os.name == 'nt'
+                    else 'chromedriver'
+                ),
                 options=chrome_options
             )
         else:
@@ -40,6 +42,9 @@ class BaseCrawler:
                 desired_capabilities=DesiredCapabilities.CHROME,
                 options=chrome_options
             )
+
+    def __del__(self):
+        self.driver.quit()
 
     def _check_if_form_is_on_screen(self, xpath_login: str):
         WebDriverWait(self.driver, 10).until(
