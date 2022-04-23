@@ -105,3 +105,7 @@ class Crawler(BaseCrawler):
             )
         )
         logger.debug('order submited!\n')
+
+    # TODO
+    def number_of_orders_submited(self):
+        raise NotImplementedError
