@@ -90,6 +90,12 @@ class Crawler(BaseCrawler):
             By.XPATH, '//span[@class="btn submit"]'
         ).click()
 
+    def _number_of_orders_submited(self):
+        return self.driver.find_element(
+            By.XPATH, '//div[@class="count_content"]'
+                      '/p[text() = "Orders Completed"]'
+                      '/following-sibling::h1').text
+
     def _check_if_order_has_submited(self):
         WebDriverWait(self.driver, TIME_TO_WAIT).until(
             EC.presence_of_element_located((
@@ -104,8 +110,6 @@ class Crawler(BaseCrawler):
                 'contains(text(), "Order completed")]')
             )
         )
-        logger.debug('order submited!\n')
-
-    # TODO
-    def number_of_orders_submited(self):
-        raise NotImplementedError
+        logger.debug('order submitted!')
+        logger.debug('%s orders have already been submitted\n',
+                     self._number_of_orders_submited())
