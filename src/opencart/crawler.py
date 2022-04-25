@@ -66,10 +66,9 @@ class Crawler(BaseCrawler):
             '//span[@class="bg-blue" and contains(text(), "Automatic grab")]'
         ).click()
 
-    # TODO: improved the performance to check if completed all orders
     def _finished_all_orders(self):
         try:
-            WebDriverWait(self.driver, TIME_TO_WAIT).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((
                     By.XPATH, '//div[contains(text(), '
                               '"You have completed all orders")]')
