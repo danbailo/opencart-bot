@@ -4,6 +4,7 @@ import os
 import os.path
 
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import Remote, Chrome, ChromeOptions
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -54,17 +55,20 @@ class BaseCrawler:
         )
 
     def _wait_for_loader(self):
-        WebDriverWait(self.driver, 5).until(
-            EC.presence_of_element_located((
-                By.XPATH,
-                '//div[@class="loading_wrap van-loading '
-                'van-loading--circular"]')
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((
+                    By.XPATH,
+                    '//div[@class="loading_wrap van-loading '
+                    'van-loading--circular"]')
+                )
             )
-        )
-        WebDriverWait(self.driver, 5).until_not(
-            EC.presence_of_element_located((
-                By.XPATH,
-                '//div[@class="loading_wrap van-loading '
-                'van-loading--circular"]')
+            WebDriverWait(self.driver, 5).until_not(
+                EC.presence_of_element_located((
+                    By.XPATH,
+                    '//div[@class="loading_wrap van-loading '
+                    'van-loading--circular"]')
+                )
             )
-        )
+        except TimeoutException:
+            self.driver.implicitly_wait(1)
