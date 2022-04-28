@@ -68,7 +68,7 @@ class Crawler(BaseCrawler):
 
     def _finished_all_orders(self):
         try:
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((
                     By.XPATH, '//div[contains(text(), '
                               '"You have completed all orders")]')
@@ -81,14 +81,12 @@ class Crawler(BaseCrawler):
 
     def _submit_order(self):
         logger.debug('submiting order')
-        WebDriverWait(self.driver, TIME_TO_WAIT).until(
-            EC.presence_of_element_located((
-                By.XPATH, '//p[contains(text(), "Pending")]')
+        submit = WebDriverWait(self.driver, TIME_TO_WAIT).until(
+            EC.element_to_be_clickable((
+                By.XPATH, '//span[@class="btn submit"]')
             )
         )
-        self.driver.find_element(
-            By.XPATH, '//span[@class="btn submit"]'
-        ).click()
+        submit.click()
 
     def _number_of_orders_submited(self):
         return self.driver.find_element(
@@ -101,12 +99,6 @@ class Crawler(BaseCrawler):
             EC.presence_of_element_located((
                 By.XPATH,
                 '//div[@class="van-toast__text" and '
-                'contains(text(), "Order completed")]')
-            )
-        )
-        WebDriverWait(self.driver, TIME_TO_WAIT).until_not(
-            EC.presence_of_element_located((
-                By.XPATH, '//div[@class="van-toast__text" and '
                 'contains(text(), "Order completed")]')
             )
         )
